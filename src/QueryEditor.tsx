@@ -1,17 +1,17 @@
-import defaults from 'lodash/defaults';
-
-import React, { PureComponent, ChangeEvent } from 'react';
-import { FormField } from '@grafana/ui';
 import { QueryEditorProps } from '@grafana/data';
+import { FormField } from '@grafana/ui';
+import defaults from 'lodash/defaults';
+import React, { ChangeEvent, PureComponent } from 'react';
 import { DataSource } from './DataSource';
-import { MyQuery, MyDataSourceOptions, defaultQuery } from './types';
+import { defaultQuery, MyDataSourceOptions, MyQuery } from './types';
+
 
 type Props = QueryEditorProps<DataSource, MyQuery, MyDataSourceOptions>;
 
-interface State {}
+interface State { }
 
 export class QueryEditor extends PureComponent<Props, State> {
-  onComponentDidMount() {}
+  onComponentDidMount() { }
 
   onQueryTextChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { onChange, query } = this.props;
