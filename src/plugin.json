@@ -1,12 +1,12 @@
 {
   "type": "datasource",
-  "name": "Simple Data Source",
-  "id": "myorgid-simple-datasource",
+  "name": "Sample Data Source",
+  "id": "myorgid-sample-datasource",
   "metrics": true,
   "backend": true,
-  "executable": "gpx_simple_datasource",
+  "executable": "gpx_sample_datasource",
   "info": {
-    "description": "Simple Data Source",
+    "description": "Sample Data Source",
     "author": {
       "name": "Your Name"
     },

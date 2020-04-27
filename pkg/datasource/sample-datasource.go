@@ -11,20 +11,20 @@ import (
 	"github.com/grafana/grafana-plugin-sdk-go/data"
 )
 
-// SimpleDatasource is an example datasource used to scaffold
+// SampleDatasource is an example datasource used to scaffold
 // new datasource plugins with an backend.
-type SimpleDatasource struct{}
+type SampleDatasource struct{}
 
-// New returns a new SimpleDatasource
-func New() *SimpleDatasource {
-	return &SimpleDatasource{}
+// New returns a new SampleDatasource
+func New() *SampleDatasource {
+	return &SampleDatasource{}
 }
 
 // QueryData handles multiple queries and returns multiple responses.
 // req contains the queries []DataQuery (where each query contains RefID as a unique identifer).
 // The QueryDataResponse contains a map of RefID to the response for each query, and each response
 // contains Frames ([]*Frame).
-func (td *SimpleDatasource) QueryData(ctx context.Context, req *backend.QueryDataRequest) (*backend.QueryDataResponse, error) {
+func (td *SampleDatasource) QueryData(ctx context.Context, req *backend.QueryDataRequest) (*backend.QueryDataResponse, error) {
 	log.DefaultLogger.Info("QueryData", "request", req)
 
 	// create response struct
@@ -49,7 +49,7 @@ type queryModel struct {
 	Format string `json:"format"`
 }
 
-func (td *SimpleDatasource) query(ctx context.Context, query backend.DataQuery) (backend.DataResponse, error) {
+func (td *SampleDatasource) query(ctx context.Context, query backend.DataQuery) (backend.DataResponse, error) {
 	// Unmarshal the json into our queryModel
 	var qm queryModel
 	response := backend.DataResponse{}
@@ -80,7 +80,7 @@ func (td *SimpleDatasource) query(ctx context.Context, query backend.DataQuery) 
 // The main use case for these health checks is the test button on the
 // datasource configuration page which allows users to verify that
 // a datasource is working as expected.
-func (td *SimpleDatasource) CheckHealth(ctx context.Context, req *backend.CheckHealthRequest) (*backend.CheckHealthResult, error) {
+func (td *SampleDatasource) CheckHealth(ctx context.Context, req *backend.CheckHealthRequest) (*backend.CheckHealthResult, error) {
 	var status = backend.HealthStatusOk
 	var message = ""
 
