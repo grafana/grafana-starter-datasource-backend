@@ -5,7 +5,6 @@ import React, { ChangeEvent, PureComponent } from 'react';
 import { DataSource } from './DataSource';
 import { defaultQuery, MyDataSourceOptions, MyQuery } from './types';
 
-
 type Props = QueryEditorProps<DataSource, MyQuery, MyDataSourceOptions>;
 
 interface State { }

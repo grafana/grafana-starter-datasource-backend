@@ -1,11 +1,11 @@
-import React, { PureComponent, ChangeEvent } from 'react';
-import { SecretFormField, FormField } from '@grafana/ui';
 import { DataSourcePluginOptionsEditorProps } from '@grafana/data';
+import { FormField, SecretFormField } from '@grafana/ui';
+import React, { ChangeEvent, PureComponent } from 'react';
 import { MyDataSourceOptions, MySecureJsonData } from './types';
 
-interface Props extends DataSourcePluginOptionsEditorProps<MyDataSourceOptions> {}
+interface Props extends DataSourcePluginOptionsEditorProps<MyDataSourceOptions> { }
 
-interface State {}
+interface State { }
 
 export class ConfigEditor extends PureComponent<Props, State> {
   onPathChange = (event: ChangeEvent<HTMLInputElement>) => {

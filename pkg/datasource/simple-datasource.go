@@ -2,6 +2,8 @@ package datasource
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"math/rand"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
@@ -43,13 +45,35 @@ func (td *SimpleDatasource) QueryData(ctx context.Context, req *backend.QueryDat
 	return response, nil
 }
 
-func (td *SimpleDatasource) query(ctx context.Context, query backend.DataQuery) (backend.DataResponse, error) {
-	queryResponse := backend.DataResponse{}
-	frame := data.NewFrame("an example result")
-	frame.Fields = append(frame.Fields, data.NewField("", nil, []int64{1, 2}))
-	queryResponse.Frames = append(queryResponse.Frames, frame)
+type queryModel struct {
+	Format string `json:"format"`
+}
 
-	return queryResponse, nil
+func (td *SimpleDatasource) query(ctx context.Context, query backend.DataQuery) (backend.DataResponse, error) {
+	// Unmarshal the json into our queryModel
+	var qm queryModel
+	response := backend.DataResponse{}
+	err := json.Unmarshal(query.JSON, &qm)
+	if err != nil {
+		return response, err
+	}
+
+	// Return an error is `Format` is empty. Returning an error on the `DataResponse`
+	// will allow others queries to be executed. If we return an error as the second
+	// param we expect to halt all queries.
+	if qm.Format == "" {
+		response.Error = errors.New("format cannot be empty")
+		return response, nil
+	}
+
+	// create data frame response
+	frame := data.NewFrame("response")
+	frame.Fields = append(frame.Fields, data.NewField("countries", nil, []string{"Sweden", "Belgium", "Germany"}))
+
+	// add the frames to the response
+	response.Frames = append(response.Frames, frame)
+
+	return response, nil
 }
 
 // CheckHealth handles health checks sent from Grafana to the plugin.
