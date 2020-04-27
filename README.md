@@ -1,5 +1,24 @@
-# Simple Data Source with a backend
+# Grafana Data Source Backend Plugin Template
 
 [![CircleCI](https://circleci.com/gh/grafana/simple-datasource-backend/tree/master.svg?style=svg)](https://circleci.com/gh/grafana/simple-datasource-backend/tree/master)
 
-This is a stub to show how to create a basic data source plugin.
+This template is a starting point for building Grafana Data Source Backend Plugins
+
+## What is Grafana Data Source Backend Plugin?
+Grafana supports a wide range of data sources, including Prometheus, MySQL, and even Datadog. There’s a good chance you can already visualize metrics from the systems you have set up. In some cases, though, you already have an in-house metrics solution that you’d like to add to your Grafana dashboards. Grafana Data Source Plugins enables integrating such solutions with Grafana. 
+
+## Getting started
+1. Install dependencies
+```BASH
+yarn install
+```
+2. Build plugin the plugin
+```BASH
+yarn dev
+mage -v buildAll
+```
+## Learn more
+- [Build a data source backend plugin tutorial](https://grafana.com/tutorials/build-a-data-source-backend-plugin)
+- [Grafana documentation](https://grafana.com/docs/)
+- [Grafana Tutorials](https://grafana.com/tutorials/) - Grafana Tutorials are step-by-step guides that help you make the most of Grafana
+- [Grafana UI Library](https://developers.grafana.com/ui) - UI components to help you build interfaces using Grafana Design System
