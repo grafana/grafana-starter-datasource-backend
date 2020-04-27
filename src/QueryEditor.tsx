@@ -7,10 +7,10 @@ import { defaultQuery, MyDataSourceOptions, MyQuery } from './types';
 
 type Props = QueryEditorProps<DataSource, MyQuery, MyDataSourceOptions>;
 
-interface State { }
+interface State {}
 
 export class QueryEditor extends PureComponent<Props, State> {
-  onComponentDidMount() { }
+  onComponentDidMount() {}
 
   onQueryTextChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { onChange, query } = this.props;
