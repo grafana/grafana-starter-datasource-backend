@@ -1,6 +1,15 @@
-import { DataQueryRequest, DataQueryResponse, DataSourceApi, DataSourceInstanceSettings, FieldType, MutableDataFrame } from '@grafana/data';
 import defaults from 'lodash/defaults';
-import { defaultQuery, MyDataSourceOptions, MyQuery } from './types';
+
+import {
+  DataQueryRequest,
+  DataQueryResponse,
+  DataSourceApi,
+  DataSourceInstanceSettings,
+  MutableDataFrame,
+  FieldType,
+} from '@grafana/data';
+
+import { MyQuery, MyDataSourceOptions, defaultQuery } from './types';
 
 export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
   constructor(instanceSettings: DataSourceInstanceSettings<MyDataSourceOptions>) {
@@ -29,7 +38,6 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
 
   async testDatasource() {
     // Implement a health check for your data source.
-
     return {
       status: 'success',
       message: 'Success',

@@ -1,7 +1,9 @@
-import { DataSourcePluginOptionsEditorProps } from '@grafana/data';
-import { FormField, SecretFormField } from '@grafana/ui';
 import React, { ChangeEvent, PureComponent } from 'react';
+import { LegacyForms } from '@grafana/ui';
+import { DataSourcePluginOptionsEditorProps } from '@grafana/data';
 import { MyDataSourceOptions, MySecureJsonData } from './types';
+
+const { SecretFormField, FormField } = LegacyForms;
 
 interface Props extends DataSourcePluginOptionsEditorProps<MyDataSourceOptions> {}
 
@@ -17,7 +19,7 @@ export class ConfigEditor extends PureComponent<Props, State> {
     onOptionsChange({ ...options, jsonData });
   };
 
-  // Secure field (only sent to th ebackend)
+  // Secure field (only sent to the backend)
   onAPIKeyChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { onOptionsChange, options } = this.props;
     onOptionsChange({
