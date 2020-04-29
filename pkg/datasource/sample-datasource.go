@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"math/rand"
+	"time"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
@@ -58,7 +59,7 @@ func (td *SampleDatasource) query(ctx context.Context, query backend.DataQuery) 
 		return response, err
 	}
 
-	// Return an error is `Format` is empty. Returning an error on the `DataResponse`
+	// Return an error is `Format` iis empty. Returning an error on the `DataResponse`
 	// will allow others queries to be executed. If we return an error as the second
 	// param we expect to halt all queries.
 	if qm.Format == "" {
@@ -68,7 +69,16 @@ func (td *SampleDatasource) query(ctx context.Context, query backend.DataQuery) 
 
 	// create data frame response
 	frame := data.NewFrame("response")
-	frame.Fields = append(frame.Fields, data.NewField("countries", nil, []string{"Sweden", "Belgium", "Germany"}))
+
+	// add the time dimension
+	frame.Fields = append(frame.Fields,
+		data.NewField("time", nil, []time.Time{query.TimeRange.From, query.TimeRange.To}),
+	)
+
+	// add values
+	frame.Fields = append(frame.Fields,
+		data.NewField("values", nil, []int64{10, 20}),
+	)
 
 	// add the frames to the response
 	response.Frames = append(response.Frames, frame)
