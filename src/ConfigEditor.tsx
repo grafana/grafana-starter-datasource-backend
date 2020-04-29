@@ -5,9 +5,9 @@ import { MyDataSourceOptions, MySecureJsonData } from './types';
 
 const { SecretFormField, FormField } = LegacyForms;
 
-interface Props extends DataSourcePluginOptionsEditorProps<MyDataSourceOptions> { }
+interface Props extends DataSourcePluginOptionsEditorProps<MyDataSourceOptions> {}
 
-interface State { }
+interface State {}
 
 export class ConfigEditor extends PureComponent<Props, State> {
   onPathChange = (event: ChangeEvent<HTMLInputElement>) => {

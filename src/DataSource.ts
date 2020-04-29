@@ -1,4 +1,11 @@
-import { DataQueryRequest, DataQueryResponse, DataSourceApi, DataSourceInstanceSettings, FieldType, MutableDataFrame } from '@grafana/data';
+import {
+  DataQueryRequest,
+  DataQueryResponse,
+  DataSourceApi,
+  DataSourceInstanceSettings,
+  FieldType,
+  MutableDataFrame,
+} from '@grafana/data';
 import defaults from 'lodash/defaults';
 import { defaultQuery, MyDataSourceOptions, MyQuery } from './types';
 
