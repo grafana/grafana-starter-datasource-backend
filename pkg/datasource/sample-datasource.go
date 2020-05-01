@@ -47,19 +47,22 @@ type queryModel struct {
 	Format string `json:"format"`
 }
 
-func (td *SampleDatasource) query(ctx context.Context, query backend.DataQuery) (response backend.DataResponse) {
+func (td *SampleDatasource) query(ctx context.Context, query backend.DataQuery) backend.DataResponse {
 	// Unmarshal the json into our queryModel
 	var qm queryModel
+
+	response := backend.DataResponse{}
+
 	response.Error = json.Unmarshal(query.JSON, &qm)
 	if response.Error != nil {
-		return
+		return response
 	}
 
 	// Return an error is `Format` iis empty. Returning an error on the `DataResponse`
 	// will allow others queries to be executed.
 	if qm.Format == "" {
 		response.Error = errors.New("format cannot be empty")
-		return
+		return response
 	}
 
 	// create data frame response
@@ -78,7 +81,7 @@ func (td *SampleDatasource) query(ctx context.Context, query backend.DataQuery) 
 	// add the frames to the response
 	response.Frames = append(response.Frames, frame)
 
-	return
+	return response
 }
 
 // CheckHealth handles health checks sent from Grafana to the plugin.
