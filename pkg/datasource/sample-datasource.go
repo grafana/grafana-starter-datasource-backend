@@ -33,10 +33,7 @@ func (td *SampleDatasource) QueryData(ctx context.Context, req *backend.QueryDat
 
 	// loop over queries and execute them individually.
 	for _, q := range req.Queries {
-		res, err := td.query(ctx, q)
-		if err != nil {
-			return nil, err
-		}
+		res := td.query(ctx, q)
 
 		// save the response in a hashmap
 		// based on with RefID as identifier
@@ -50,21 +47,22 @@ type queryModel struct {
 	Format string `json:"format"`
 }
 
-func (td *SampleDatasource) query(ctx context.Context, query backend.DataQuery) (backend.DataResponse, error) {
+func (td *SampleDatasource) query(ctx context.Context, query backend.DataQuery) backend.DataResponse {
 	// Unmarshal the json into our queryModel
 	var qm queryModel
+
 	response := backend.DataResponse{}
-	err := json.Unmarshal(query.JSON, &qm)
-	if err != nil {
-		return response, err
+
+	response.Error = json.Unmarshal(query.JSON, &qm)
+	if response.Error != nil {
+		return response
 	}
 
 	// Return an error is `Format` iis empty. Returning an error on the `DataResponse`
-	// will allow others queries to be executed. If we return an error as the second
-	// param we expect to halt all queries.
+	// will allow others queries to be executed.
 	if qm.Format == "" {
 		response.Error = errors.New("format cannot be empty")
-		return response, nil
+		return response
 	}
 
 	// create data frame response
@@ -83,7 +81,7 @@ func (td *SampleDatasource) query(ctx context.Context, query backend.DataQuery) 
 	// add the frames to the response
 	response.Frames = append(response.Frames, frame)
 
-	return response, nil
+	return response
 }
 
 // CheckHealth handles health checks sent from Grafana to the plugin.
