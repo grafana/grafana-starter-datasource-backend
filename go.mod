@@ -1,4 +1,4 @@
-module github.com/grafana/test-datasource
+module github.com/grafana/simple-datasource-backend
 
 go 1.14
 
