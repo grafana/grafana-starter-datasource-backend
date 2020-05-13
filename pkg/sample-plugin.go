@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"math/rand"
 	"net/http"
 	"time"
@@ -77,11 +76,9 @@ func (td *SampleDatasource) query(ctx context.Context, query backend.DataQuery) 
 		return response
 	}
 
-	// Return an error is `Format` iis empty. Returning an error on the `DataResponse`
-	// will allow others queries to be executed.
+	// Log a warning if `Format` is empty.
 	if qm.Format == "" {
-		response.Error = errors.New("format cannot be empty")
-		return response
+		log.DefaultLogger.Warn("format is empty. defaulting to time series")
 	}
 
 	// create data frame response
