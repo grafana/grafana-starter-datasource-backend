@@ -76,8 +76,7 @@ func (td *SampleDatasource) query(ctx context.Context, query backend.DataQuery) 
 		return response
 	}
 
-	// Return an error is `Format` iis empty. Returning an error on the `DataResponse`
-	// will allow others queries to be executed.
+	// Log a warning if `Format` is empty.
 	if qm.Format == "" {
 		log.DefaultLogger.Warn("format is empty. defaulting to time series")
 	}
