@@ -1,9 +1,7 @@
 {
   "name": "simple-datasource-backend",
   "version": "1.0.0",
-  "description": "Grafana Data Source Plugin Template",
-  "backend": true,
-  "executable": "gpx_simple_datasource_backend",
+  "description": "Grafana Data Source Backend Plugin Template",
   "scripts": {
     "build": "grafana-toolkit plugin:build",
     "test": "grafana-toolkit plugin:test",
