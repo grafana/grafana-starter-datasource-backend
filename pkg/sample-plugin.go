@@ -106,7 +106,7 @@ func (td *SampleDatasource) query(ctx context.Context, query backend.DataQuery) 
 // a datasource is working as expected.
 func (td *SampleDatasource) CheckHealth(ctx context.Context, req *backend.CheckHealthRequest) (*backend.CheckHealthResult, error) {
 	var status = backend.HealthStatusOk
-	var message = ""
+	var message = "Data source is working"
 
 	if rand.Int()%2 == 0 {
 		status = backend.HealthStatusError
