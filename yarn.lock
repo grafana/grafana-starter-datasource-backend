@@ -943,7 +943,7 @@
   resolved "https://registry.yarnpkg.com/@emotion/weak-memoize/-/weak-memoize-0.2.5.tgz#8eed982e2ee6f7f4e44c253e12962980791efd46"
   integrity sha512-6U71C2Wp7r5XtFtQzYrW5iKFT67OixrSxjI4MptCHzdSVlgabczzqLe0ZSgnub/5Kp4hSbpDB1tMytZY9pwxxA==
 
-"@grafana/data@7.0.0-beta.3":
+"@grafana/data@7.0.0-beta.3", "@grafana/data@next":
   version "7.0.0-beta.3"
   resolved "https://registry.yarnpkg.com/@grafana/data/-/data-7.0.0-beta.3.tgz#45533ae793584b06d63b9a4edbf95d119784b43d"
   integrity sha512-se9OBNYqQk5YlDivN6jDCZDpte4A8AGMFm1WqEfT8DBu6IAfWigQJGPMVT/26aYVP+kDFgwEymr+G/Zgs0zaew==
@@ -970,7 +970,7 @@
   resolved "https://registry.yarnpkg.com/@grafana/eslint-config/-/eslint-config-1.0.0-rc1.tgz#3b0a1abddfea900a57abc9526ad31abb1da2d42c"
   integrity sha512-xmcJR6mUYw1llq3m8gT2kE7xoq6yLMUgNf2Mf1yZvDCx2cXFSyaLlGs1dqjFWjJDbV46GdhYRAyRbyGR+J9QKg==
 
-"@grafana/runtime@7.0.0-beta.3":
+"@grafana/runtime@next":
   version "7.0.0-beta.3"
   resolved "https://registry.yarnpkg.com/@grafana/runtime/-/runtime-7.0.0-beta.3.tgz#9c1fe81154d2b8d79fe8b53a2725a5aec73fe7c5"
   integrity sha512-ywCvUuxcZfwn3/qUNgz+NGfi1Yg0XatxXCxJ1g49HvcGM0rDsgH/C28l/hqFb5O5UrA9WHgXQ+fe6H86TAagzw==
@@ -1002,7 +1002,7 @@
     tiny-invariant "^1.0.1"
     tiny-warning "^0.0.3"
 
-"@grafana/toolkit@7.0.0-beta.3":
+"@grafana/toolkit@next":
   version "7.0.0-beta.3"
   resolved "https://registry.yarnpkg.com/@grafana/toolkit/-/toolkit-7.0.0-beta.3.tgz#0f8702f99fdf461d21903284b6bfbce0c04dc61b"
   integrity sha512-ke3ic4/iBqIS9o/im3d7os69dZl1E0ghxEbf7whnkpevidivRb2fHthAw0NHZOH7jJVOB/CGOqNpgl+uH4tOLQ==
@@ -1095,7 +1095,7 @@
   resolved "https://registry.yarnpkg.com/@grafana/tsconfig/-/tsconfig-1.0.0-rc1.tgz#d07ea16755a50cae21000113f30546b61647a200"
   integrity sha512-nucKPGyzlSKYSiJk5RA8GzMdVWhdYNdF+Hh65AXxjD9PlY69JKr5wANj8bVdQboag6dgg0BFKqgKPyY+YtV4Iw==
 
-"@grafana/ui@7.0.0-beta.3":
+"@grafana/ui@7.0.0-beta.3", "@grafana/ui@next":
   version "7.0.0-beta.3"
   resolved "https://registry.yarnpkg.com/@grafana/ui/-/ui-7.0.0-beta.3.tgz#5a664b91c1e155205ea67bfb53bffb8f14f7db27"
   integrity sha512-fShi3Qf2RHLLU0MhtLGo5c5AwreUw75R1Ci2GQRvOnRqePsj6qSug1ipikCOhjW/JW90rxV974Or7PZETRRSYQ==
