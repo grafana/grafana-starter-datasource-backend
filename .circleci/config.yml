@@ -50,6 +50,14 @@ jobs:
           name: Build and test frontend
           command: ./node_modules/.bin/grafana-toolkit plugin:ci-build
       - run:
+          name: Build backend
+          command: mage -v buildAll
+      - run:
+          name: Test backend
+          command: |
+            mage -v lint
+            mage -v coverage
+      - run:
           name: Move results to ci folder
           command: ./node_modules/.bin/grafana-toolkit plugin:ci-build --finish
       - run:
