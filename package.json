@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "Grafana Data Source Backend Plugin Template",
   "scripts": {
-    "build": "grafana-toolkit plugin:build",
-    "test": "grafana-toolkit plugin:test",
-    "dev": "grafana-toolkit plugin:dev",
-    "watch": "grafana-toolkit plugin:dev --watch"
+    "build": "rm -rf node_modules/@grafana/data/node_modules; grafana-toolkit plugin:build",
+    "test": "rm -rf node_modules/@grafana/data/node_modules; grafana-toolkit plugin:test",
+    "dev": "rm -rf node_modules/@grafana/data/node_modules; grafana-toolkit plugin:dev",
+    "watch": "rm -rf node_modules/@grafana/data/node_modules; grafana-toolkit plugin:dev --watch"
   },
   "author": "Grafana Labs",
   "license": "Apache-2.0",
