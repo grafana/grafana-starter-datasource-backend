@@ -11,13 +11,16 @@
   "author": "Grafana Labs",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@grafana/data": "^7.0.0",
-    "@grafana/toolkit": "^7.0.0",
-    "@grafana/runtime": "^7.0.0",
-    "@grafana/ui": "^7.0.0",
+    "@grafana/data": "latest",
+    "@grafana/toolkit": "latest",
+    "@grafana/runtime": "latest",
+    "@grafana/ui": "latest",
     "@types/lodash": "latest"
   },
   "engines": {
     "node": ">=12 <13"
+  },
+  "resolutions": {
+    "rxjs": "6.6.3"
   }
 }
