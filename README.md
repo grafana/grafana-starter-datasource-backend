@@ -1,6 +1,6 @@
 # Grafana Data Source Backend Plugin Template
 
-[![CircleCI](https://circleci.com/gh/grafana/simple-datasource-backend/tree/master.svg?style=svg)](https://circleci.com/gh/grafana/simple-datasource-backend/tree/master)
+[![Build](https://github.com/grafana/grafana-starter-datasource-backend/workflows/CI/badge.svg)](https://github.com/grafana/grafana-datasource-backend/actions?query=workflow%3A%22CI%22)
 
 This template is a starting point for building Grafana Data Source Backend Plugins
 
@@ -17,40 +17,48 @@ A data source backend plugin consists of both frontend and backend components.
 ### Frontend
 
 1. Install dependencies
-```BASH
-yarn install
-```
+
+   ```bash
+   yarn install
+   ```
 
 2. Build plugin in development mode or run in watch mode
-```BASH
-yarn dev
-```
-or
-```BASH
-yarn watch
-```
+
+   ```bash
+   yarn dev
+   ```
+
+   or
+
+   ```bash
+   yarn watch
+   ```
+
 3. Build plugin in production mode
-```BASH
-yarn build
-```
+
+   ```bash
+   yarn build
+   ```
 
 ### Backend
 
 1. Update [Grafana plugin SDK for Go](https://grafana.com/docs/grafana/latest/developers/plugins/backend/grafana-plugin-sdk-for-go/) dependency to the latest minor version:
 
-```bash
-go get -u github.com/grafana/grafana-plugin-sdk-go
-```
+   ```bash
+   go get -u github.com/grafana/grafana-plugin-sdk-go
+   ```
 
 2. Build backend plugin binaries for Linux, Windows and Darwin:
-```BASH
-mage -v
-```
+
+   ```bash
+   mage -v
+   ```
 
 3. List all available Mage targets for additional commands:
-```BASH
-mage -l
-```
+
+   ```bash
+   mage -l
+   ```
 
 ## Learn more
 
