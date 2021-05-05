@@ -46,6 +46,7 @@ A data source backend plugin consists of both frontend and backend components.
 
    ```bash
    go get -u github.com/grafana/grafana-plugin-sdk-go
+   go mod tidy
    ```
 
 2. Build backend plugin binaries for Linux, Windows and Darwin:
