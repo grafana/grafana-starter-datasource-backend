@@ -9,7 +9,7 @@ import (
 
 func main() {
 	// Start listening to requests send from Grafana. This call is blocking so
-	// it wont finish until Grafana shutsdown the process or the plugin choose
+	// it wont finish until Grafana shuts down the process or the plugin choose
 	// to exit close down by itself
 	err := datasource.Serve(newDatasource())
 

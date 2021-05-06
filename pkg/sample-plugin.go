@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"math/rand"
 	"strconv"
 	"time"
@@ -41,12 +42,29 @@ type SampleDatasource struct {
 	im instancemgmt.InstanceManager
 }
 
+func (td *SampleDatasource) getInstance(pCtx backend.PluginContext) (*datasourceInstance, error) {
+	instance, err := td.im.Get(pCtx)
+	if err != nil {
+		return nil, err
+	}
+	dsInstance, ok := instance.(*datasourceInstance)
+	if !ok {
+		return nil, fmt.Errorf("malformed instance type %T", instance)
+	}
+	return dsInstance, nil
+}
+
 // QueryData handles multiple queries and returns multiple responses.
 // req contains the queries []DataQuery (where each query contains RefID as a unique identifier).
 // The QueryDataResponse contains a map of RefID to the response for each query, and each response
 // contains Frames ([]*Frame).
 func (td *SampleDatasource) QueryData(ctx context.Context, req *backend.QueryDataRequest) (*backend.QueryDataResponse, error) {
 	log.DefaultLogger.Info("QueryData called", "request", req)
+
+	_, err := td.getInstance(req.PluginContext)
+	if err != nil {
+		return nil, err
+	}
 
 	// create response struct
 	response := backend.NewQueryDataResponse()
@@ -178,7 +196,7 @@ func (td *SampleDatasource) RunStream(ctx context.Context, req *backend.RunStrea
 
 			frameJSON, err := json.Marshal(frame)
 			if err != nil {
-				backend.Logger.Error("Error marshaling frame", "error", err)
+				log.DefaultLogger.Error("Error marshaling frame", "error", err)
 				continue
 			}
 
@@ -186,7 +204,7 @@ func (td *SampleDatasource) RunStream(ctx context.Context, req *backend.RunStrea
 				Data: frameJSON,
 			})
 			if err != nil {
-				backend.Logger.Error("Error sending frame", "error", err)
+				log.DefaultLogger.Error("Error sending frame", "error", err)
 				continue
 			}
 		}
@@ -200,6 +218,7 @@ type datasourceInstance struct {
 }
 
 func newDataSourceInstance(setting backend.DataSourceInstanceSettings) (instancemgmt.Instance, error) {
+	log.DefaultLogger.Info("Creating new instance", "updated", setting.Updated)
 	var dsSettings datasourceSettings
 	if err := json.Unmarshal(setting.JSONData, &dsSettings); err != nil {
 		return nil, err
