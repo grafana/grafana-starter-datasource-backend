@@ -8,11 +8,13 @@ import (
 )
 
 func main() {
-	// Start listening to requests sent from Grafana. This call is blocking so
-	// it won't finish until Grafana shuts down the process or the plugin choose
-	// to exit by itself.
-	err := datasource.Manage(NewSampleDatasource, datasource.ManageOpts{})
-
+	instanceManager := datasource.NewAutoInstanceManager(NewSampleDatasource)
+	err := datasource.Serve(datasource.ServeOpts{
+		QueryDataHandler:    instanceManager,
+		CheckHealthHandler:  instanceManager,
+		CallResourceHandler: instanceManager,
+		StreamHandler:       instanceManager,
+	})
 	// Log any error if we could start the plugin.
 	if err != nil {
 		log.DefaultLogger.Error(err.Error())
