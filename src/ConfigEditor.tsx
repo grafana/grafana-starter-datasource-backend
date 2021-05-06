@@ -1,9 +1,9 @@
-import React, { ChangeEvent, PureComponent, SyntheticEvent } from 'react';
+import React, { ChangeEvent, PureComponent } from 'react';
 import { LegacyForms } from '@grafana/ui';
 import { DataSourcePluginOptionsEditorProps } from '@grafana/data';
 import { MyDataSourceOptions, MySecureJsonData } from './types';
 
-const { SecretFormField, FormField, Switch } = LegacyForms;
+const { SecretFormField, FormField } = LegacyForms;
 
 interface Props extends DataSourcePluginOptionsEditorProps<MyDataSourceOptions> {}
 
@@ -45,16 +45,6 @@ export class ConfigEditor extends PureComponent<Props, State> {
     });
   };
 
-  onWithStreamingChange = (event: SyntheticEvent<HTMLInputElement>) => {
-    const { onOptionsChange, options } = this.props;
-    onOptionsChange({
-      ...options,
-      jsonData: {
-        withStreaming: event.currentTarget.checked,
-      },
-    });
-  };
-
   render() {
     const { options } = this.props;
     const { jsonData, secureJsonFields } = options;
@@ -84,16 +74,6 @@ export class ConfigEditor extends PureComponent<Props, State> {
               inputWidth={20}
               onReset={this.onResetAPIKey}
               onChange={this.onAPIKeyChange}
-            />
-          </div>
-        </div>
-
-        <div className="gf-form-inline">
-          <div className="gf-form">
-            <Switch
-                checked={jsonData.withStreaming || false}
-                label="Enable streaming"
-                onChange={this.onWithStreamingChange}
             />
           </div>
         </div>

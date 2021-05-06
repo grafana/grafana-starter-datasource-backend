@@ -64,7 +64,7 @@ func (td *SampleDatasource) QueryData(ctx context.Context, req *backend.QueryDat
 }
 
 type queryModel struct {
-	Format string `json:"format"`
+	WithStreaming bool `json:"withStreaming"`
 }
 
 func (td *SampleDatasource) query(ctx context.Context, pCtx backend.PluginContext, query backend.DataQuery) backend.DataResponse {
@@ -76,11 +76,6 @@ func (td *SampleDatasource) query(ctx context.Context, pCtx backend.PluginContex
 	response.Error = json.Unmarshal(query.JSON, &qm)
 	if response.Error != nil {
 		return response
-	}
-
-	// Log a warning if `Format` is empty.
-	if qm.Format == "" {
-		log.DefaultLogger.Warn("format is empty. defaulting to time series")
 	}
 
 	// create data frame response
@@ -98,15 +93,13 @@ func (td *SampleDatasource) query(ctx context.Context, pCtx backend.PluginContex
 
 	// If datasource created with streaming on then return a channel
 	// to subscribe on client-side and consume updated from a plugin.
-	if instance, err := td.im.Get(pCtx); err == nil {
-		if dsInstance, ok := instance.(*datasourceInstance); ok && dsInstance.settings.WithStreaming {
-			channel := live.Channel{
-				Scope:     live.ScopeDatasource,
-				Namespace: strconv.FormatInt(pCtx.DataSourceInstanceSettings.ID, 10),
-				Path:      "stream",
-			}
-			frame.SetMeta(&data.FrameMeta{Channel: channel.String()})
+	if qm.WithStreaming {
+		channel := live.Channel{
+			Scope:     live.ScopeDatasource,
+			Namespace: strconv.FormatInt(pCtx.DataSourceInstanceSettings.ID, 10),
+			Path:      "stream",
 		}
+		frame.SetMeta(&data.FrameMeta{Channel: channel.String()})
 	}
 
 	// add the frames to the response
@@ -200,9 +193,7 @@ func (td *SampleDatasource) RunStream(ctx context.Context, req *backend.RunStrea
 	}
 }
 
-type datasourceSettings struct {
-	WithStreaming bool `json:"withStreaming"`
-}
+type datasourceSettings struct{}
 
 type datasourceInstance struct {
 	settings datasourceSettings
