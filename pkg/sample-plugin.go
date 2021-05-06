@@ -15,6 +15,14 @@ import (
 	"github.com/grafana/grafana-plugin-sdk-go/live"
 )
 
+// Make sure SampleDatasource implements required interfaces.
+var (
+	_ backend.QueryDataHandler      = (*SampleDatasource)(nil)
+	_ backend.CheckHealthHandler    = (*SampleDatasource)(nil)
+	_ backend.StreamHandler         = (*SampleDatasource)(nil)
+	_ instancemgmt.InstanceDisposer = (*SampleDatasource)(nil)
+)
+
 // NewSampleDatasource creates new datasource instance.
 func NewSampleDatasource(_ backend.DataSourceInstanceSettings) (instancemgmt.Instance, error) {
 	return &SampleDatasource{
