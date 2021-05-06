@@ -3,75 +3,52 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
+	"errors"
 	"math/rand"
 	"strconv"
 	"time"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
-	"github.com/grafana/grafana-plugin-sdk-go/backend/datasource"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/instancemgmt"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
 	"github.com/grafana/grafana-plugin-sdk-go/data"
 	"github.com/grafana/grafana-plugin-sdk-go/live"
 )
 
-// newDatasource returns datasource.ServeOpts.
-func newDatasource() datasource.ServeOpts {
-	// creates a instance manager for your plugin. The function passed
-	// into `NewInstanceManger` is called when the instance is created
-	// for the first time or when a datasource configuration changed.
-	im := datasource.NewInstanceManager(newDataSourceInstance)
-	ds := &SampleDatasource{
-		im: im,
-	}
-
-	return datasource.ServeOpts{
-		QueryDataHandler:   ds,
-		CheckHealthHandler: ds,
-		StreamHandler:      ds,
-	}
+// NewSampleDatasource creates new datasource instance.
+func NewSampleDatasource(_ backend.DataSourceInstanceSettings) (instancemgmt.Instance, error) {
+	return &SampleDatasource{
+		closeCh: make(chan struct{}),
+	}, nil
 }
 
 // SampleDatasource is an example datasource used to scaffold
 // new datasource plugins with an backend.
 type SampleDatasource struct {
-	// The instance manager can help with lifecycle management
-	// of datasource instances in plugins. It's not a requirements
-	// but a best practice that we recommend that you follow.
-	im instancemgmt.InstanceManager
+	closeCh chan struct{}
 }
 
-func (td *SampleDatasource) getInstance(pCtx backend.PluginContext) (*datasourceInstance, error) {
-	instance, err := td.im.Get(pCtx)
-	if err != nil {
-		return nil, err
-	}
-	dsInstance, ok := instance.(*datasourceInstance)
-	if !ok {
-		return nil, fmt.Errorf("malformed instance type %T", instance)
-	}
-	return dsInstance, nil
+// Dispose here tells plugin SDK that plugin wants to clean up resources
+// when new instance created. As soon as datasource settings change detected
+// by SDK old datasource instance will be disposed and new one will be created
+// using NewSampleDatasource.
+func (d *SampleDatasource) Dispose() {
+	close(d.closeCh)
 }
 
 // QueryData handles multiple queries and returns multiple responses.
 // req contains the queries []DataQuery (where each query contains RefID as a unique identifier).
 // The QueryDataResponse contains a map of RefID to the response for each query, and each response
 // contains Frames ([]*Frame).
-func (td *SampleDatasource) QueryData(ctx context.Context, req *backend.QueryDataRequest) (*backend.QueryDataResponse, error) {
+func (d *SampleDatasource) QueryData(ctx context.Context, req *backend.QueryDataRequest) (*backend.QueryDataResponse, error) {
 	log.DefaultLogger.Info("QueryData called", "request", req)
-
-	_, err := td.getInstance(req.PluginContext)
-	if err != nil {
-		return nil, err
-	}
 
 	// create response struct
 	response := backend.NewQueryDataResponse()
 
 	// loop over queries and execute them individually.
 	for _, q := range req.Queries {
-		res := td.query(ctx, req.PluginContext, q)
+		res := d.query(ctx, req.PluginContext, q)
 
 		// save the response in a hashmap
 		// based on with RefID as identifier
@@ -85,7 +62,7 @@ type queryModel struct {
 	WithStreaming bool `json:"withStreaming"`
 }
 
-func (td *SampleDatasource) query(ctx context.Context, pCtx backend.PluginContext, query backend.DataQuery) backend.DataResponse {
+func (d *SampleDatasource) query(_ context.Context, pCtx backend.PluginContext, query backend.DataQuery) backend.DataResponse {
 	// Unmarshal the json into our queryModel
 	var qm queryModel
 
@@ -130,7 +107,7 @@ func (td *SampleDatasource) query(ctx context.Context, pCtx backend.PluginContex
 // The main use case for these health checks is the test button on the
 // datasource configuration page which allows users to verify that
 // a datasource is working as expected.
-func (td *SampleDatasource) CheckHealth(ctx context.Context, req *backend.CheckHealthRequest) (*backend.CheckHealthResult, error) {
+func (d *SampleDatasource) CheckHealth(_ context.Context, req *backend.CheckHealthRequest) (*backend.CheckHealthResult, error) {
 	log.DefaultLogger.Info("CheckHealth called", "request", req)
 
 	var status = backend.HealthStatusOk
@@ -147,7 +124,7 @@ func (td *SampleDatasource) CheckHealth(ctx context.Context, req *backend.CheckH
 	}, nil
 }
 
-func (td *SampleDatasource) SubscribeStream(ctx context.Context, req *backend.SubscribeStreamRequest) (*backend.SubscribeStreamResponse, error) {
+func (d *SampleDatasource) SubscribeStream(_ context.Context, req *backend.SubscribeStreamRequest) (*backend.SubscribeStreamResponse, error) {
 	log.DefaultLogger.Info("SubscribeStream called", "request", req)
 
 	return &backend.SubscribeStreamResponse{
@@ -158,7 +135,7 @@ func (td *SampleDatasource) SubscribeStream(ctx context.Context, req *backend.Su
 	}, nil
 }
 
-func (td *SampleDatasource) PublishStream(ctx context.Context, req *backend.PublishStreamRequest) (*backend.PublishStreamResponse, error) {
+func (d *SampleDatasource) PublishStream(_ context.Context, req *backend.PublishStreamRequest) (*backend.PublishStreamResponse, error) {
 	log.DefaultLogger.Info("PublishStream called", "request", req)
 
 	return &backend.PublishStreamResponse{
@@ -166,7 +143,7 @@ func (td *SampleDatasource) PublishStream(ctx context.Context, req *backend.Publ
 	}, nil
 }
 
-func (td *SampleDatasource) RunStream(ctx context.Context, req *backend.RunStreamRequest, sender backend.StreamPacketSender) error {
+func (d *SampleDatasource) RunStream(ctx context.Context, req *backend.RunStreamRequest, sender backend.StreamPacketSender) error {
 	log.DefaultLogger.Info("RunStream called", "request", req)
 
 	// Create the same data frame as for query data.
@@ -187,6 +164,9 @@ func (td *SampleDatasource) RunStream(ctx context.Context, req *backend.RunStrea
 		select {
 		case <-ctx.Done():
 			return nil
+		case <-d.closeCh:
+			log.DefaultLogger.Info("Datasource restart")
+			return errors.New("datasource closed")
 		case <-time.After(200 * time.Millisecond):
 			// Send new data periodically.
 			frame.Fields[0].Set(0, time.Now())
@@ -209,26 +189,4 @@ func (td *SampleDatasource) RunStream(ctx context.Context, req *backend.RunStrea
 			}
 		}
 	}
-}
-
-type datasourceSettings struct{}
-
-type datasourceInstance struct {
-	settings datasourceSettings
-}
-
-func newDataSourceInstance(setting backend.DataSourceInstanceSettings) (instancemgmt.Instance, error) {
-	log.DefaultLogger.Info("Creating new instance", "updated", setting.Updated)
-	var dsSettings datasourceSettings
-	if err := json.Unmarshal(setting.JSONData, &dsSettings); err != nil {
-		return nil, err
-	}
-	return &datasourceInstance{
-		settings: dsSettings,
-	}, nil
-}
-
-func (s *datasourceInstance) Dispose() {
-	// Called before creating a new instance to allow plugin authors
-	// to cleanup.
 }
