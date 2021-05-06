@@ -8,13 +8,7 @@ import (
 )
 
 func main() {
-	instanceManager := datasource.NewAutoInstanceManager(NewSampleDatasource)
-	err := datasource.Serve(datasource.ServeOpts{
-		QueryDataHandler:    instanceManager,
-		CheckHealthHandler:  instanceManager,
-		CallResourceHandler: instanceManager,
-		StreamHandler:       instanceManager,
-	})
+	err := datasource.Manage(NewSampleDatasource, datasource.ManageOpts{})
 	// Log any error if we could start the plugin.
 	if err != nil {
 		log.DefaultLogger.Error(err.Error())
