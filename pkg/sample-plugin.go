@@ -16,6 +16,8 @@ import (
 )
 
 // Make sure SampleDatasource implements required interfaces.
+// This is important to do since otherwise we will only get a
+// not implemented error response from plugin in runtime.
 var (
 	_ backend.QueryDataHandler      = (*SampleDatasource)(nil)
 	_ backend.CheckHealthHandler    = (*SampleDatasource)(nil)
@@ -23,7 +25,7 @@ var (
 	_ instancemgmt.InstanceDisposer = (*SampleDatasource)(nil)
 )
 
-// NewSampleDatasource creates new datasource instance.
+// NewSampleDatasource creates a new datasource instance.
 func NewSampleDatasource(_ backend.DataSourceInstanceSettings) (instancemgmt.Instance, error) {
 	return &SampleDatasource{
 		closeCh: make(chan struct{}),
@@ -37,9 +39,9 @@ type SampleDatasource struct {
 }
 
 // Dispose here tells plugin SDK that plugin wants to clean up resources
-// when new instance created. As soon as datasource settings change detected
-// by SDK old datasource instance will be disposed and new one will be created
-// using NewSampleDatasource.
+// when a new instance created. As soon as datasource settings change detected
+// by SDK old datasource instance will be disposed and a new one will be created
+// using NewSampleDatasource factory function.
 func (d *SampleDatasource) Dispose() {
 	close(d.closeCh)
 }
