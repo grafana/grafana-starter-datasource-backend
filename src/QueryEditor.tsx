@@ -5,7 +5,6 @@ import { LegacyForms } from '@grafana/ui';
 import { QueryEditorProps } from '@grafana/data';
 import { DataSource } from './datasource';
 import { defaultQuery, MyDataSourceOptions, MyQuery } from './types';
-import { config } from '@grafana/runtime';
 
 const { FormField, Switch } = LegacyForms;
 
