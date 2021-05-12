@@ -12,20 +12,6 @@ const { FormField, Switch } = LegacyForms;
 type Props = QueryEditorProps<DataSource, MyQuery, MyDataSourceOptions>;
 
 export class QueryEditor extends PureComponent<Props> {
-  supportsStream = true;
-
-  componentDidMount() {
-    const version = config.buildInfo.version;
-    if (version.startsWith('7.')) {
-      // When v8 has an 8.0 number we can remove most of this
-      const parts = version.split(version);
-      const minor = +parts[1];
-      if (minor < 5) {
-        this.supportsStream = false;
-      }
-    }
-  }
-
   onQueryTextChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { onChange, query } = this.props;
     onChange({ ...query, queryText: event.target.value });
@@ -66,9 +52,7 @@ export class QueryEditor extends PureComponent<Props> {
           label="Query Text"
           tooltip="Not used yet"
         />
-        {this.supportsStream && (
-          <Switch checked={withStreaming || false} label="Enable streaming" onChange={this.onWithStreamingChange} />
-        )}
+        <Switch checked={withStreaming || false} label="Enable streaming (v8+)" onChange={this.onWithStreamingChange} />
       </div>
     );
   }
