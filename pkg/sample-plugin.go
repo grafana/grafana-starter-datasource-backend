@@ -134,6 +134,7 @@ func (d *SampleDatasource) CheckHealth(_ context.Context, req *backend.CheckHeal
 	}, nil
 }
 
+// SubscribeStream is called when a client wants to connect to a stream.  This callback allows sending the first message
 func (d *SampleDatasource) SubscribeStream(_ context.Context, req *backend.SubscribeStreamRequest) (*backend.SubscribeStreamResponse, error) {
 	log.DefaultLogger.Info("SubscribeStream called", "request", req)
 
@@ -145,14 +146,7 @@ func (d *SampleDatasource) SubscribeStream(_ context.Context, req *backend.Subsc
 	}, nil
 }
 
-func (d *SampleDatasource) PublishStream(_ context.Context, req *backend.PublishStreamRequest) (*backend.PublishStreamResponse, error) {
-	log.DefaultLogger.Info("PublishStream called", "request", req)
-
-	return &backend.PublishStreamResponse{
-		Status: backend.PublishStreamStatusPermissionDenied,
-	}, nil
-}
-
+// RunStream is called once for any open channel.  Results are shared with everyone subscribed to the same channel
 func (d *SampleDatasource) RunStream(ctx context.Context, req *backend.RunStreamRequest, sender backend.StreamPacketSender) error {
 	log.DefaultLogger.Info("RunStream called", "request", req)
 
@@ -199,4 +193,13 @@ func (d *SampleDatasource) RunStream(ctx context.Context, req *backend.RunStream
 			}
 		}
 	}
+}
+
+// PublishStream is called when a client sends a message to the stream
+func (d *SampleDatasource) PublishStream(_ context.Context, req *backend.PublishStreamRequest) (*backend.PublishStreamResponse, error) {
+	log.DefaultLogger.Info("PublishStream called", "request", req)
+
+	return &backend.PublishStreamResponse{
+		Status: backend.PublishStreamStatusPermissionDenied,
+	}, nil
 }
