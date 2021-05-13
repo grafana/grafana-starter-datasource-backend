@@ -86,13 +86,9 @@ func (d *SampleDatasource) query(_ context.Context, pCtx backend.PluginContext, 
 	// create data frame response
 	frame := data.NewFrame("response")
 
-	// add the time dimension
+	// add fields
 	frame.Fields = append(frame.Fields,
 		data.NewField("time", nil, []time.Time{query.TimeRange.From, query.TimeRange.To}),
-	)
-
-	// add values
-	frame.Fields = append(frame.Fields,
 		data.NewField("values", nil, []int64{10, 20}),
 	)
 
@@ -140,9 +136,6 @@ func (d *SampleDatasource) SubscribeStream(_ context.Context, req *backend.Subsc
 
 	return &backend.SubscribeStreamResponse{
 		Status: backend.SubscribeStreamStatusOK,
-		// Enabling UseRunStream will make Grafana open a unidirectional stream
-		// to consume data from a plugin while active subscribers exist.
-		UseRunStream: true,
 	}, nil
 }
 
@@ -156,9 +149,6 @@ func (d *SampleDatasource) RunStream(ctx context.Context, req *backend.RunStream
 	// Add the time dimension.
 	frame.Fields = append(frame.Fields,
 		data.NewField("time", nil, make([]time.Time, 1)),
-	)
-	// Add values dimension.
-	frame.Fields = append(frame.Fields,
 		data.NewField("values", nil, make([]int64, 1)),
 	)
 
