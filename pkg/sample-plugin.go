@@ -15,9 +15,15 @@ import (
 	"github.com/grafana/grafana-plugin-sdk-go/live"
 )
 
-// Make sure SampleDatasource implements required interfaces.
-// This is important to do since otherwise we will only get a
-// not implemented error response from plugin in runtime.
+// Make sure SampleDatasource implements required interfaces. This is important to do
+// since otherwise we will only get a not implemented error response from plugin in
+// runtime. In this example datasource instance implements backend.QueryDataHandler,
+// backend.CheckHealthHandler, backend.StreamHandler interfaces. Plugin should not
+// implement all these interfaces - only those which are required for a particular task.
+// For example if plugin does not need streaming functionality then you are free to remove
+// methods that implement backend.StreamHandler. Implementing instancemgmt.InstanceDisposer
+// is useful to clean up resources used by previous datasource instance when a new datasource
+// instance created upon datasource settings changed.
 var (
 	_ backend.QueryDataHandler      = (*SampleDatasource)(nil)
 	_ backend.CheckHealthHandler    = (*SampleDatasource)(nil)
@@ -32,16 +38,15 @@ func NewSampleDatasource(_ backend.DataSourceInstanceSettings) (instancemgmt.Ins
 	}, nil
 }
 
-// SampleDatasource is an example datasource used to scaffold
-// new datasource plugins with an backend.
+// SampleDatasource is an example datasource which can respond to data queries, reports
+// its health and has streaming skills.
 type SampleDatasource struct {
 	closeCh chan struct{}
 }
 
-// Dispose here tells plugin SDK that plugin wants to clean up resources
-// when a new instance created. As soon as datasource settings change detected
-// by SDK old datasource instance will be disposed and a new one will be created
-// using NewSampleDatasource factory function.
+// Dispose here tells plugin SDK that plugin wants to clean up resources when a new instance
+// created. As soon as datasource settings change detected by SDK old datasource instance will
+// be disposed and a new one will be created using NewSampleDatasource factory function.
 func (d *SampleDatasource) Dispose() {
 	close(d.closeCh)
 }
@@ -73,27 +78,28 @@ type queryModel struct {
 }
 
 func (d *SampleDatasource) query(_ context.Context, pCtx backend.PluginContext, query backend.DataQuery) backend.DataResponse {
-	// Unmarshal the json into our queryModel
-	var qm queryModel
-
 	response := backend.DataResponse{}
+
+	// Unmarshal the JSON into our queryModel.
+	var qm queryModel
 
 	response.Error = json.Unmarshal(query.JSON, &qm)
 	if response.Error != nil {
 		return response
 	}
 
-	// create data frame response
+	// create data frame response.
 	frame := data.NewFrame("response")
 
-	// add fields
+	// add fields.
 	frame.Fields = append(frame.Fields,
 		data.NewField("time", nil, []time.Time{query.TimeRange.From, query.TimeRange.To}),
 		data.NewField("values", nil, []int64{10, 20}),
 	)
 
-	// If datasource created with streaming on then return a channel
-	// to subscribe on client-side and consume updated from a plugin.
+	// If query called with streaming on then return a channel
+	// to subscribe on a client-side and consume updates from a plugin.
+	// Feel free to remove this if you don't need streaming for your datasource.
 	if qm.WithStreaming {
 		channel := live.Channel{
 			Scope:     live.ScopeDatasource,
@@ -103,7 +109,7 @@ func (d *SampleDatasource) query(_ context.Context, pCtx backend.PluginContext, 
 		frame.SetMeta(&data.FrameMeta{Channel: channel.String()})
 	}
 
-	// add the frames to the response
+	// add the frames to the response.
 	response.Frames = append(response.Frames, frame)
 
 	return response
@@ -130,7 +136,8 @@ func (d *SampleDatasource) CheckHealth(_ context.Context, req *backend.CheckHeal
 	}, nil
 }
 
-// SubscribeStream is called when a client wants to connect to a stream.  This callback allows sending the first message
+// SubscribeStream is called when a client wants to connect to a stream. This callback
+// allows sending the first message.
 func (d *SampleDatasource) SubscribeStream(_ context.Context, req *backend.SubscribeStreamRequest) (*backend.SubscribeStreamResponse, error) {
 	log.DefaultLogger.Info("SubscribeStream called", "request", req)
 
@@ -139,14 +146,15 @@ func (d *SampleDatasource) SubscribeStream(_ context.Context, req *backend.Subsc
 	}, nil
 }
 
-// RunStream is called once for any open channel.  Results are shared with everyone subscribed to the same channel
+// RunStream is called once for any open channel.  Results are shared with everyone
+// subscribed to the same channel.
 func (d *SampleDatasource) RunStream(ctx context.Context, req *backend.RunStreamRequest, sender backend.StreamPacketSender) error {
 	log.DefaultLogger.Info("RunStream called", "request", req)
 
 	// Create the same data frame as for query data.
 	frame := data.NewFrame("response")
 
-	// Add the time dimension.
+	// Add fields (matching the same schema used in QueryData).
 	frame.Fields = append(frame.Fields,
 		data.NewField("time", nil, make([]time.Time, 1)),
 		data.NewField("values", nil, make([]int64, 1)),
@@ -159,7 +167,6 @@ func (d *SampleDatasource) RunStream(ctx context.Context, req *backend.RunStream
 		case <-ctx.Done():
 			return nil
 		case <-d.closeCh:
-			log.DefaultLogger.Info("Datasource restart")
 			return errors.New("datasource closed")
 		case <-time.After(200 * time.Millisecond):
 			// Send new data periodically.
@@ -185,7 +192,7 @@ func (d *SampleDatasource) RunStream(ctx context.Context, req *backend.RunStream
 	}
 }
 
-// PublishStream is called when a client sends a message to the stream
+// PublishStream is called when a client sends a message to the stream.
 func (d *SampleDatasource) PublishStream(_ context.Context, req *backend.PublishStreamRequest) (*backend.PublishStreamResponse, error) {
 	log.DefaultLogger.Info("PublishStream called", "request", req)
 
