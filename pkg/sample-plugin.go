@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"math/rand"
 	"strconv"
 	"time"
@@ -33,22 +32,18 @@ var (
 
 // NewSampleDatasource creates a new datasource instance.
 func NewSampleDatasource(_ backend.DataSourceInstanceSettings) (instancemgmt.Instance, error) {
-	return &SampleDatasource{
-		closeCh: make(chan struct{}),
-	}, nil
+	return &SampleDatasource{}, nil
 }
 
 // SampleDatasource is an example datasource which can respond to data queries, reports
 // its health and has streaming skills.
-type SampleDatasource struct {
-	closeCh chan struct{}
-}
+type SampleDatasource struct{}
 
 // Dispose here tells plugin SDK that plugin wants to clean up resources when a new instance
 // created. As soon as datasource settings change detected by SDK old datasource instance will
 // be disposed and a new one will be created using NewSampleDatasource factory function.
 func (d *SampleDatasource) Dispose() {
-	close(d.closeCh)
+	// Clean up datasource instance resources.
 }
 
 // QueryData handles multiple queries and returns multiple responses.
@@ -141,8 +136,13 @@ func (d *SampleDatasource) CheckHealth(_ context.Context, req *backend.CheckHeal
 func (d *SampleDatasource) SubscribeStream(_ context.Context, req *backend.SubscribeStreamRequest) (*backend.SubscribeStreamResponse, error) {
 	log.DefaultLogger.Info("SubscribeStream called", "request", req)
 
+	status := backend.SubscribeStreamStatusPermissionDenied
+	if req.Path == "stream" {
+		// Allow subscribing only on expected path.
+		status = backend.SubscribeStreamStatusOK
+	}
 	return &backend.SubscribeStreamResponse{
-		Status: backend.SubscribeStreamStatusOK,
+		Status: status,
 	}, nil
 }
 
@@ -162,12 +162,12 @@ func (d *SampleDatasource) RunStream(ctx context.Context, req *backend.RunStream
 
 	counter := 0
 
+	// Stream data frames periodically till stream closed by Grafana.
 	for {
 		select {
 		case <-ctx.Done():
+			log.DefaultLogger.Info("context done, finish streaming", "path", req.Path)
 			return nil
-		case <-d.closeCh:
-			return errors.New("datasource closed")
 		case <-time.After(200 * time.Millisecond):
 			// Send new data periodically.
 			frame.Fields[0].Set(0, time.Now())
@@ -196,6 +196,7 @@ func (d *SampleDatasource) RunStream(ctx context.Context, req *backend.RunStream
 func (d *SampleDatasource) PublishStream(_ context.Context, req *backend.PublishStreamRequest) (*backend.PublishStreamResponse, error) {
 	log.DefaultLogger.Info("PublishStream called", "request", req)
 
+	// Do not allow publishing at all.
 	return &backend.PublishStreamResponse{
 		Status: backend.PublishStreamStatusPermissionDenied,
 	}, nil
