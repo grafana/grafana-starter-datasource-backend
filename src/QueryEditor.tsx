@@ -1,12 +1,12 @@
-import defaults from 'lodash/defaults';
+import { defaults } from 'lodash';
 
-import React, { ChangeEvent, PureComponent } from 'react';
+import React, { ChangeEvent, PureComponent, SyntheticEvent } from 'react';
 import { LegacyForms } from '@grafana/ui';
 import { QueryEditorProps } from '@grafana/data';
 import { DataSource } from './datasource';
 import { defaultQuery, MyDataSourceOptions, MyQuery } from './types';
 
-const { FormField } = LegacyForms;
+const { FormField, Switch } = LegacyForms;
 
 type Props = QueryEditorProps<DataSource, MyQuery, MyDataSourceOptions>;
 
@@ -23,9 +23,16 @@ export class QueryEditor extends PureComponent<Props> {
     onRunQuery();
   };
 
+  onWithStreamingChange = (event: SyntheticEvent<HTMLInputElement>) => {
+    const { onChange, query, onRunQuery } = this.props;
+    onChange({ ...query, withStreaming: event.currentTarget.checked });
+    // executes the query
+    onRunQuery();
+  };
+
   render() {
     const query = defaults(this.props.query, defaultQuery);
-    const { queryText, constant } = query;
+    const { queryText, constant, withStreaming } = query;
 
     return (
       <div className="gf-form">
@@ -44,6 +51,7 @@ export class QueryEditor extends PureComponent<Props> {
           label="Query Text"
           tooltip="Not used yet"
         />
+        <Switch checked={withStreaming || false} label="Enable streaming (v8+)" onChange={this.onWithStreamingChange} />
       </div>
     );
   }
