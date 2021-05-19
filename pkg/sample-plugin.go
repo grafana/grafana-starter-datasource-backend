@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"math/rand"
-	"strconv"
 	"time"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
@@ -98,7 +97,7 @@ func (d *SampleDatasource) query(_ context.Context, pCtx backend.PluginContext, 
 	if qm.WithStreaming {
 		channel := live.Channel{
 			Scope:     live.ScopeDatasource,
-			Namespace: strconv.FormatInt(pCtx.DataSourceInstanceSettings.ID, 10),
+			Namespace: pCtx.DataSourceInstanceSettings.UID,
 			Path:      "stream",
 		}
 		frame.SetMeta(&data.FrameMeta{Channel: channel.String()})
