@@ -166,9 +166,9 @@ func (d *SampleDatasource) RunStream(ctx context.Context, req *backend.RunStream
 	for {
 		select {
 		case <-ctx.Done():
-			log.DefaultLogger.Info("context done, finish streaming", "path", req.Path)
+			log.DefaultLogger.Info("Context done, finish streaming", "path", req.Path)
 			return nil
-		case <-time.After(200 * time.Millisecond):
+		case <-time.After(time.Second):
 			// Send new data periodically.
 			frame.Fields[0].Set(0, time.Now())
 			frame.Fields[1].Set(0, int64(10*(counter%2+1)))
