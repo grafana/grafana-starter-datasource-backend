@@ -147,7 +147,7 @@ func (d *SampleDatasource) SubscribeStream(_ context.Context, req *backend.Subsc
 
 // RunStream is called once for any open channel.  Results are shared with everyone
 // subscribed to the same channel.
-func (d *SampleDatasource) RunStream(ctx context.Context, req *backend.RunStreamRequest, sender backend.StreamPacketSender) error {
+func (d *SampleDatasource) RunStream(ctx context.Context, req *backend.RunStreamRequest, sender *backend.StreamSender) error {
 	log.DefaultLogger.Info("RunStream called", "request", req)
 
 	// Create the same data frame as for query data.
@@ -174,15 +174,7 @@ func (d *SampleDatasource) RunStream(ctx context.Context, req *backend.RunStream
 
 			counter++
 
-			frameJSON, err := json.Marshal(frame)
-			if err != nil {
-				log.DefaultLogger.Error("Error marshaling frame", "error", err)
-				continue
-			}
-
-			err = sender.Send(&backend.StreamPacket{
-				Data: frameJSON,
-			})
+			err := sender.SendFrame(frame, data.IncludeAll)
 			if err != nil {
 				log.DefaultLogger.Error("Error sending frame", "error", err)
 				continue
