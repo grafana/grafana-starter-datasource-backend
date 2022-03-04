@@ -1,3 +1,15 @@
+## ⚠️ Deprecated!
+
+**This repository is deprecated.** <br />
+A more up-to-date version of examples is available here: https://github.com/grafana/grafana-plugin-examples
+
+**Available examples:**
+- [datasource-basic](https://github.com/grafana/grafana-plugin-examples/blob/master/examples/datasource-basic) - demonstrates how to build a basic data source plugin with a backend
+- [datasource-http](https://github.com/grafana/grafana-plugin-examples/blob/master/examples/datasource-http) - demonstrates how to query data from HTTP-based APIs.
+- [datasource-streaming-websocket](https://github.com/grafana/grafana-plugin-examples/blob/master/examples/datasource-streaming-websocket) - demonstrates how to create an event-based data source plugin using RxJS and web sockets.
+
+---
+
 # Grafana Data Source Backend Plugin Template
 
 [![Build](https://github.com/grafana/grafana-starter-datasource-backend/workflows/CI/badge.svg)](https://github.com/grafana/grafana-datasource-backend/actions?query=workflow%3A%22CI%22)
